@@ -1,0 +1,1 @@
+print("Hello! My Synthetic Data Generator project is working.")
