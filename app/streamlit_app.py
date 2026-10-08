@@ -4,6 +4,16 @@ import sys
 import streamlit as st
 import pandas as pd
 
+from sdv.metadata import Metadata
+from sdv.single_table import (
+    GaussianCopulaSynthesizer,
+    CTGANSynthesizer
+)
+
+# --------------------------------------------------
+# Add project root to Python path
+# --------------------------------------------------
+
 project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..")
 )
@@ -11,12 +21,6 @@ project_root = os.path.abspath(
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-
-from sdv.metadata import Metadata
-from sdv.single_table import (
-    GaussianCopulaSynthesizer,
-    CTGANSynthesizer
-)
 
 from src.evaluation.evaluation_pipeline import (
     evaluate_synthetic_data
@@ -32,6 +36,17 @@ st.set_page_config(
     page_icon="🧪",
     layout="wide"
 )
+st.title("🤖 Synthetic Data Generator")
+st.subheader("Privacy & Utility Validation Dashboard")
+
+st.markdown(
+    """
+    Generate realistic synthetic tabular data while evaluating
+    **utility, distribution similarity, and basic privacy risk**.
+    """
+)
+
+st.divider()
 
 
 # --------------------------------------------------
@@ -45,16 +60,11 @@ st.write(
     "utility and basic privacy risks."
 )
 
-st.info(
-    "This application is a prototype for research and demonstration. "
-    "The privacy checks shown here are basic memorization checks, "
-    "not formal privacy guarantees."
-)
 
 
-# --------------------------------------------------
-# 1. Upload Dataset
-# --------------------------------------------------
+# ==================================================
+# 1. UPLOAD DATASET
+# ==================================================
 
 st.header("1. Upload Dataset")
 
@@ -63,30 +73,62 @@ uploaded_file = st.file_uploader(
     type=["csv"]
 )
 
-data = None
-
 
 if uploaded_file is not None:
 
-    data = pd.read_csv(uploaded_file)
+    # --------------------------------------------------
+    # Load dataset
+    # --------------------------------------------------
+
+    data = pd.read_csv(
+        uploaded_file
+    )
 
     st.success(
         f"Dataset loaded successfully: "
         f"{data.shape[0]} rows × {data.shape[1]} columns"
     )
 
-    st.subheader("Dataset Preview")
+
+    # --------------------------------------------------
+    # Original dataset
+    # --------------------------------------------------
+
+    st.subheader(
+        "Original Dataset"
+    )
+
+    st.write(
+        f"Original dataset: "
+        f"{len(data)} rows × "
+        f"{len(data.columns)} columns"
+    )
+
+    original_rows_to_show = st.number_input(
+        "Number of original rows to display",
+        min_value=200,
+        max_value=len(data),
+        value=min(200, len(data)),
+        step=50,
+        key="original_rows"
+    )
 
     st.dataframe(
-        data.head()
+        data.head(
+            int(original_rows_to_show)
+        ),
+        use_container_width=True,
+        height=500
     )
 
 
-    # --------------------------------------------------
-    # 2. Select Model
-    # --------------------------------------------------
+    # ==================================================
+    # 2. SELECT MODEL
+    # ==================================================
 
-    st.header("2. Select Synthetic Data Model")
+    st.header(
+        "2. Select Synthetic Data Model"
+    )
 
     model_choice = st.selectbox(
         "Choose a generator",
@@ -102,17 +144,19 @@ if uploaded_file is not None:
     )
 
 
-    # --------------------------------------------------
-    # 3. Generate Synthetic Data
-    # --------------------------------------------------
+    # ==================================================
+    # 3. GENERATE SYNTHETIC DATA
+    # ==================================================
 
-    st.header("3. Generate Synthetic Data")
+    st.header(
+        "3. Generate Synthetic Data"
+    )
 
     num_rows = st.number_input(
         "Number of synthetic rows",
         min_value=10,
         max_value=5000,
-        value=100,
+        value=200,
         step=10
     )
 
@@ -124,9 +168,9 @@ if uploaded_file is not None:
 
     if generate_button:
 
-        # ----------------------------------------------
+        # --------------------------------------------------
         # Prepare model data
-        # ----------------------------------------------
+        # --------------------------------------------------
 
         model_data = data.copy()
 
@@ -137,9 +181,9 @@ if uploaded_file is not None:
             )
 
 
-        # ----------------------------------------------
+        # --------------------------------------------------
         # Detect metadata
-        # ----------------------------------------------
+        # --------------------------------------------------
 
         metadata = Metadata.detect_from_dataframe(
             data=model_data
@@ -153,9 +197,9 @@ if uploaded_file is not None:
             )
 
 
-        # ----------------------------------------------
+        # ==================================================
         # Train selected model
-        # ----------------------------------------------
+        # ==================================================
 
         if model_choice == "Gaussian Copula":
 
@@ -220,9 +264,9 @@ if uploaded_file is not None:
                 )
 
 
-        # ----------------------------------------------
-        # Generation result
-        # ----------------------------------------------
+        # ==================================================
+        # Generated dataset
+        # ==================================================
 
         st.success(
             f"Successfully generated "
@@ -230,23 +274,42 @@ if uploaded_file is not None:
         )
 
         st.subheader(
-            "Synthetic Data Preview"
+            "Synthetic Dataset"
         )
 
         st.write(
-            f"Generated dataset: "
+            f"Synthetic dataset: "
             f"{len(synthetic_data)} rows × "
             f"{len(synthetic_data.columns)} columns"
         )
 
+        synthetic_rows_to_show = st.number_input(
+            "Number of synthetic rows to display",
+            min_value=min(
+                200,
+                len(synthetic_data)
+            ),
+            max_value=len(synthetic_data),
+            value=min(
+                200,
+                len(synthetic_data)
+            ),
+            step=50,
+            key="synthetic_rows"
+        )
+
         st.dataframe(
-            synthetic_data.head(10)
+            synthetic_data.head(
+                int(synthetic_rows_to_show)
+            ),
+            use_container_width=True,
+            height=500
         )
 
 
-        # ----------------------------------------------
-        # 4. Evaluation
-        # ----------------------------------------------
+        # ==================================================
+        # 4. EVALUATION
+        # ==================================================
 
         st.header(
             "4. Utility & Privacy Evaluation"
@@ -268,16 +331,18 @@ if uploaded_file is not None:
             "Evaluating synthetic data..."
         ):
 
-            evaluation_results = evaluate_synthetic_data(
-                model_data,
-                synthetic_data,
-                numerical_columns
+            evaluation_results = (
+                evaluate_synthetic_data(
+                    model_data,
+                    synthetic_data,
+                    numerical_columns
+                )
             )
 
 
-        # ----------------------------------------------
+        # --------------------------------------------------
         # Extract evaluation results
-        # ----------------------------------------------
+        # --------------------------------------------------
 
         correlation_similarity = (
             evaluation_results[
@@ -341,30 +406,30 @@ if uploaded_file is not None:
         )
 
 
-        # ----------------------------------------------
-        # Average KS statistic
-        # ----------------------------------------------
+        # --------------------------------------------------
+        # Average KS
+        # --------------------------------------------------
 
         ks_statistics = [
             values["ks_statistic"]
             for values in ks_results.values()
         ]
 
-
         if len(ks_statistics) > 0:
 
-            average_ks = sum(
-                ks_statistics
-            ) / len(ks_statistics)
+            average_ks = (
+                sum(ks_statistics)
+                / len(ks_statistics)
+            )
 
         else:
 
             average_ks = 0.0
 
 
-        # ----------------------------------------------
-        # Basic evaluation rules
-        # ----------------------------------------------
+        # ==================================================
+        # Evaluation rules
+        # ==================================================
 
         utility_pass = (
             correlation_similarity >= 0.80
@@ -384,14 +449,13 @@ if uploaded_file is not None:
         )
 
 
-        # ----------------------------------------------
+        # ==================================================
         # Evaluation Summary
-        # ----------------------------------------------
+        # ==================================================
 
         st.subheader(
             "📊 Evaluation Summary"
         )
-
 
         summary_col1, summary_col2, summary_col3 = (
             st.columns(3)
@@ -456,9 +520,9 @@ if uploaded_file is not None:
         )
 
 
-        # ----------------------------------------------
+        # ==================================================
         # Utility metrics
-        # ----------------------------------------------
+        # ==================================================
 
         st.subheader(
             "Utility: Correlation Similarity"
@@ -469,21 +533,19 @@ if uploaded_file is not None:
             f"{correlation_similarity:.4f}"
         )
 
-
         st.metric(
             "Average KS Statistic",
             f"{average_ks:.4f}"
         )
 
 
-        # ----------------------------------------------
+        # ==================================================
         # Privacy: Exact Match
-        # ----------------------------------------------
+        # ==================================================
 
         st.subheader(
             "Privacy: Exact Match Check"
         )
-
 
         col1, col2 = st.columns(2)
 
@@ -504,14 +566,13 @@ if uploaded_file is not None:
             )
 
 
-        # ----------------------------------------------
+        # ==================================================
         # Privacy: Nearest Neighbor
-        # ----------------------------------------------
+        # ==================================================
 
         st.subheader(
             "Privacy: Nearest-Neighbor Distance"
         )
-
 
         col1, col2, col3 = st.columns(3)
 
@@ -540,9 +601,9 @@ if uploaded_file is not None:
             )
 
 
-        # ----------------------------------------------
-        # Distribution similarity
-        # ----------------------------------------------
+        # ==================================================
+        # Distribution Similarity
+        # ==================================================
 
         st.subheader(
             "Utility: Distribution Similarity"
@@ -572,14 +633,13 @@ if uploaded_file is not None:
         )
 
 
-        # ----------------------------------------------
-        # 5. Download Synthetic Data
-        # ----------------------------------------------
+        # ==================================================
+        # 5. DOWNLOAD SYNTHETIC DATA
+        # ==================================================
 
         st.subheader(
             "5. Download Synthetic Data"
         )
-
 
         csv_data = synthetic_data.to_csv(
             index=False
@@ -594,9 +654,9 @@ if uploaded_file is not None:
         )
 
 
-    # --------------------------------------------------
-        # 6. Model Comparison
-        # --------------------------------------------------
+        # ==================================================
+        # 6. MODEL COMPARISON
+        # ==================================================
 
         st.header(
             "6. Model Comparison"
