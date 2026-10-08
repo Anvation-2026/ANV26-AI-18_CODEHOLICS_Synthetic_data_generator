@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CODEHOLICS — Synthetic Data Generator with Privacy & Utility Validation</title>
+  <meta name="description" content="Generate realistic synthetic tabular data and validate its utility, distribution similarity, and basic privacy risk.">
+  
+  <!-- Modern Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Interactive Data Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+  <!-- Interactive Canvas Particle Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" id="main-header">
+    <div class="nav-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">CODEHOLICS</span>
+          <span class="brand-tag">SYNTHETIC LAB • AI-04</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#dataset-section" class="nav-link">Dataset</a>
+        <a href="#models-section" class="nav-link">Generator</a>
+        <a href="#synthetic-section" class="nav-link">Synthetic Data</a>
+        <a href="#utility-section" class="nav-link">Utility</a>
+        <a href="#privacy-section" class="nav-link">Privacy</a>
+        <a href="#benchmark-section" class="nav-link">Benchmarks</a>
+        <a href="#verdict-section" class="nav-link">Verdict</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="btn-hero-cta-nav" class="btn btn-primary" onclick="document.getElementById('dataset-section').scrollIntoView({behavior:'smooth'})">
+          Upload Dataset
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- User Journey Stepper Indicator -->
+  <div class="stepper-bar-container">
+    <div class="stepper-bar" id="journey-stepper">
+      <div class="step-item active" data-step="1">
+        <span class="step-num">01</span>
+        <span class="step-label">Upload Data</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="2">
+        <span class="step-num">02</span>
+        <span class="step-label">Select Model</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="3">
+        <span class="step-num">03</span>
+        <span class="step-label">Generate Data</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="4">
+        <span class="step-num">04</span>
+        <span class="step-label">Validate Utility</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="5">
+        <span class="step-num">05</span>
+        <span class="step-label">Check Privacy</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="6">
+        <span class="step-num">06</span>
+        <span class="step-label">Compare Models</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item" data-step="7">
+        <span class="step-num">07</span>
+        <span class="step-label">Download Data</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="page-content">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero-section">
+      <div class="hero-glow-orb hero-glow-1"></div>
+      <div class="hero-glow-orb hero-glow-2"></div>
+      
+      <div class="hero-content">
+        <div class="hero-badge animate-fade-in">
+          <span class="badge-dot"></span>
+          <span>AI • SYNTHETIC DATA • PRIVACY</span>
+        </div>
+
+        <h1 class="hero-headline animate-slide-up">
+          Synthetic Data, <br>
+          <span class="gradient-text">Without the Privacy Risk.</span>
+        </h1>
+
+        <p class="hero-subtitle animate-slide-up-delayed">
+          Generate realistic synthetic tabular data and validate its utility,
+          distribution similarity, and basic privacy risk.
+        </p>
+
+        <div class="hero-cta-group animate-slide-up-delayed-2">
+          <button id="hero-generate-cta" class="btn btn-primary btn-lg glow-effect">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Generate Synthetic Data
+          </button>
+          <button id="hero-explore-cta" class="btn btn-secondary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Explore Results
+          </button>
+        </div>
+
+        <!-- Animated AI Processing Visual Flow -->
+        <div class="ai-processing-visual" id="ai-flow-widget">
+          <div class="flow-stage flow-input">
+            <div class="flow-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="9" y1="21" x2="9" y2="9"/>
+              </svg>
+            </div>
+            <div class="flow-label">Source Records</div>
+            <div class="flow-particles-stream stream-left">
+              <span class="stream-particle p1"></span>
+              <span class="stream-particle p2"></span>
+              <span class="stream-particle p3"></span>
+            </div>
+          </div>
+
+          <div class="flow-core-engine">
+            <div class="engine-halo"></div>
+            <div class="engine-core">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </div>
+            <div class="engine-title">Generative Synthesis Core</div>
+            <div class="engine-subtext">Covariance • Marginals • Latent GAN</div>
+          </div>
+
+          <div class="flow-stage flow-output">
+            <div class="flow-particles-stream stream-right">
+              <span class="stream-particle p4"></span>
+              <span class="stream-particle p5"></span>
+              <span class="stream-particle p6"></span>
+            </div>
+            <div class="flow-icon flow-icon-synth">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="flow-label">Privacy-Verified Synthetic Data</div>
+          </div>
+        </div>
+
+        <!-- Evaluation Highlights Strip for Judges -->
+        <div class="evaluation-highlights-strip animate-slide-up-delayed-2">
+          <div class="highlight-chip">
+            <span class="chip-icon">🤖</span>
+            <div class="chip-text">
+              <strong>3 Generative Engines</strong>
+              <span>Gaussian Copula • CTGAN • CTGAN v2</span>
+            </div>
+          </div>
+          <div class="highlight-chip">
+            <span class="chip-icon">📊</span>
+            <div class="chip-text">
+              <strong>Statistical &amp; ML Utility</strong>
+              <span>Kolmogorov-Smirnov • Correlation • TSTR F1</span>
+            </div>
+          </div>
+          <div class="highlight-chip">
+            <span class="chip-icon">🛡️</span>
+            <div class="chip-text">
+              <strong>Privacy Risk Assessment</strong>
+              <span>0 Verbatim Duplicates • Dispersion Ratio &ge; 1.0</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 1 — DATASET WORKSPACE -->
+    <section class="dashboard-section" id="dataset-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 01</div>
+        <h2 class="section-title">Dataset Workspace</h2>
+        <p class="section-description">Upload your source tabular CSV dataset for synthesis and privacy evaluation.</p>
+      </div>
+
+      <!-- Upload Zone -->
+      <div class="upload-container glass-card">
+        <div class="upload-dropzone" id="dropzone">
+          <input type="file" id="csv-file-input" accept=".csv,.CSV,text/csv,text/plain" class="file-input-hidden">
+          <div class="upload-icon-circle" id="upload-icon-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="upload-text-group">
+            <h3 class="upload-prompt" id="upload-prompt-text">Drag &amp; Drop Tabular CSV file here</h3>
+            <p class="upload-subtext" id="upload-subtext-text">Supports any numerical and categorical tabular datasets (.csv) up to 50MB</p>
+          </div>
+
+          <!-- Active File Status Pill -->
+          <div class="dropzone-status-badge" id="dropzone-file-status" style="display: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span id="dropzone-status-text">Active File Loaded</span>
+          </div>
+
+          <div class="upload-actions">
+            <button class="btn btn-primary btn-lg glow-effect" id="btn-browse-file" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Browse CSV File
+            </button>
+            <button class="btn btn-secondary-subtle" id="btn-demo-sample" type="button" title="Quickly load sample customer churn dataset for live demonstration">
+              <span class="pulse-indicator"></span>
+              Demo with Sample Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workspace Cards: Original vs Synthetic -->
+      <div class="grid-2-col">
+        <!-- Original Dataset Card -->
+        <div class="glass-card stat-card" id="card-original-summary">
+          <div class="card-header-row">
+            <div class="card-icon-badge icon-real">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Original Dataset</h3>
+              <span class="card-subtitle" id="orig-filename-label">No file uploaded</span>
+            </div>
+            <div class="status-pill" id="orig-status-pill">Awaiting Upload</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-caption">Total Rows</span>
+              <span class="stat-number" id="orig-rows-val">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Columns</span>
+              <span class="stat-number" id="orig-cols-val">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Numerical Features</span>
+              <span class="stat-number" id="orig-num-val">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Categorical Features</span>
+              <span class="stat-number" id="orig-cat-val">0</span>
+            </div>
+          </div>
+
+          <div class="features-pill-list" id="orig-features-list">
+            <span class="card-info-note">Upload a CSV file to inspect detected features</span>
+          </div>
+        </div>
+
+        <!-- Synthetic Dataset Target Card -->
+        <div class="glass-card stat-card" id="card-synthetic-summary">
+          <div class="card-header-row">
+            <div class="card-icon-badge icon-synth">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Synthetic Dataset</h3>
+              <span class="card-subtitle" id="synth-status-subtitle">Awaiting source dataset</span>
+            </div>
+            <div class="status-pill" id="synth-status-pill">Awaiting Source Data</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-caption">Generated Rows</span>
+              <span class="stat-number" id="synth-rows-val">200</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Columns</span>
+              <span class="stat-number" id="synth-cols-val">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Selected Model</span>
+              <span class="stat-number stat-highlight" id="synth-model-val">Gaussian Copula</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-caption">Privacy Check</span>
+              <span class="stat-number" id="synth-privacy-val" style="font-size: 1.15rem; color: var(--text-muted);">Awaiting Data</span>
+            </div>
+          </div>
+
+          <div class="card-footer-action">
+            <span class="card-info-note">Generated data preserves analytical distributions without reproducing source records.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dataset Preview Glass Card -->
+      <div class="glass-card preview-card">
+        <div class="preview-header">
+          <div class="preview-title-group">
+            <h3 class="preview-title">Source Dataset Preview</h3>
+            <span class="preview-counter" id="orig-preview-count">No dataset loaded</span>
+          </div>
+          <div class="preview-controls">
+            <input type="text" id="orig-search-input" placeholder="Filter rows..." class="table-search-input">
+          </div>
+        </div>
+
+        <div class="glass-table-wrapper" id="orig-table-container">
+          <table class="glass-table" id="orig-preview-table">
+            <thead id="orig-table-head">
+              <tr><th>Upload a CSV file to preview records</th></tr>
+            </thead>
+            <tbody id="orig-table-body">
+              <tr><td style="text-align: center; padding: 40px; color: #64748b;">No dataset loaded yet. Drag &amp; drop or browse a CSV file above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 — MODEL LAB (GENERATION ENGINE) -->
+    <section class="dashboard-section" id="models-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 02 & 03</div>
+        <h2 class="section-title">Generation Engine</h2>
+        <p class="section-description">Select an analytical synthesizer model and generate synthetic records with full validation.</p>
+      </div>
+
+      <!-- Model Selector Cards -->
+      <div class="models-grid">
+        <!-- Model 1: Gaussian Copula -->
+        <div class="glass-card model-card selected" data-model="Gaussian Copula" id="model-card-copula">
+          <div class="model-selection-glow"></div>
+          <div class="model-card-top">
+            <div class="model-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 20h18"/>
+                <path d="M4 17c4 0 5-13 8-13s4 13 8 13"/>
+              </svg>
+            </div>
+            <div class="model-radio">
+              <span class="radio-dot"></span>
+            </div>
+          </div>
+          <h3 class="model-name">Gaussian Copula</h3>
+          <span class="model-badge badge-fast">Fast Statistical Baseline</span>
+          <p class="model-desc">
+            Fast statistical baseline preserving relationships between variables using marginal distributions and a multivariate Gaussian copula.
+          </p>
+          <div class="model-spec-list">
+            <span class="spec-pill">Instant Training (~1s)</span>
+            <span class="spec-pill">High Correlation Preservation</span>
+            <span class="spec-pill">No GPU Required</span>
+          </div>
+        </div>
+
+        <!-- Model 2: CTGAN -->
+        <div class="glass-card model-card" data-model="CTGAN" id="model-card-ctgan">
+          <div class="model-selection-glow"></div>
+          <div class="model-card-top">
+            <div class="model-icon icon-ai">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                <rect x="9" y="9" width="6" height="6"/>
+                <line x1="9" y1="1" x2="9" y2="4"/>
+                <line x1="15" y1="1" x2="15" y2="4"/>
+                <line x1="9" y1="20" x2="9" y2="23"/>
+                <line x1="15" y1="20" x2="15" y2="23"/>
+                <line x1="20" y1="9" x2="23" y2="9"/>
+                <line x1="20" y1="14" x2="23" y2="14"/>
+                <line x1="1" y1="9" x2="4" y2="9"/>
+                <line x1="1" y1="14" x2="4" y2="14"/>
+              </svg>
+            </div>
+            <div class="model-radio">
+              <span class="radio-dot"></span>
+            </div>
+          </div>
+          <h3 class="model-name">CTGAN</h3>
+          <span class="model-badge badge-deep">Deep Generative</span>
+          <p class="model-desc">
+            Deep generative model designed for realistic tabular data with mode-specific normalization and conditional generators.
+          </p>
+          <div class="model-spec-list">
+            <span class="spec-pill">WGAN-GP Loss</span>
+            <span class="spec-pill">Continuous & Categorical</span>
+            <span class="spec-pill">300 Epochs Default</span>
+          </div>
+        </div>
+
+        <!-- Model 3: CTGAN v2 -->
+        <div class="glass-card model-card" data-model="CTGAN v2" id="model-card-ctgan-v2">
+          <div class="model-selection-glow"></div>
+          <div class="model-card-top">
+            <div class="model-icon icon-v2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div class="model-radio">
+              <span class="radio-dot"></span>
+            </div>
+          </div>
+          <h3 class="model-name">CTGAN v2</h3>
+          <span class="model-badge badge-tuned">Tuned Architecture</span>
+          <p class="model-desc">
+            Alternative CTGAN configuration for improved experimentation with tuned discriminator/generator learning rates and batch sizes.
+          </p>
+          <div class="model-spec-list">
+            <span class="spec-pill">Optimized LR (2e-4)</span>
+            <span class="spec-pill">Enhanced Batch Dynamics</span>
+            <span class="spec-pill">High Retention</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls & Execution Bar -->
+      <div class="glass-card generation-controls-card">
+        <div class="controls-row">
+          <div class="control-group">
+            <label class="control-label" for="num-rows-input">Number of Synthetic Rows</label>
+            <div class="input-with-stepper">
+              <input type="number" id="num-rows-input" min="10" max="5000" value="200" step="50" class="glass-input">
+              <span class="input-unit">records</span>
+            </div>
+          </div>
+
+          <div class="control-group" id="epochs-control-group">
+            <label class="control-label" for="epochs-select">Training Profile (for Neural CTGAN)</label>
+            <select id="epochs-select" class="glass-select">
+              <option value="30">Interactive Preview (30 epochs • ~15s)</option>
+              <option value="100" selected>Balanced Benchmark (100 epochs • ~45s)</option>
+              <option value="300">Deep Training (300 epochs • ~2m)</option>
+            </select>
+          </div>
+
+          <div class="generation-cta-container">
+            <button id="btn-generate-main" class="btn btn-primary btn-xl glow-primary">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              <span>Generate Synthetic Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time Progress Flow State Machine -->
+        <div class="generation-progress-wrapper" id="progress-container" style="display: none;">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+          </div>
+          
+          <div class="progress-steps-list">
+            <div class="progress-step-item" id="pstep-train">
+              <div class="step-spinner-circle"></div>
+              <span class="pstep-text">Training generator...</span>
+            </div>
+            <div class="progress-step-item" id="pstep-sample">
+              <div class="step-spinner-circle"></div>
+              <span class="pstep-text">Generating synthetic records...</span>
+            </div>
+            <div class="progress-step-item" id="pstep-validate">
+              <div class="step-spinner-circle"></div>
+              <span class="pstep-text">Running validation...</span>
+            </div>
+            <div class="progress-step-item" id="pstep-done">
+              <div class="step-spinner-circle"></div>
+              <span class="pstep-text">Generation complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 — SYNTHETIC DATA PREVIEW -->
+    <section class="dashboard-section" id="synthetic-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 04</div>
+        <div class="header-split">
+          <div>
+            <h2 class="section-title">Synthetic Dataset</h2>
+            <p class="section-description">Inspect generated synthetic tabular records with full column distributions.</p>
+          </div>
+          <div class="header-action-group">
+            <button id="btn-download-csv" class="btn btn-accent btn-lg glow-effect">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download Synthetic CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card preview-card">
+        <div class="preview-header">
+          <div class="preview-title-group">
+            <h3 class="preview-title" id="synth-table-title">Synthetic Records (Gaussian Copula)</h3>
+            <span class="preview-counter" id="synth-record-counter">200 generated rows • 8 columns</span>
+          </div>
+          <div class="preview-controls">
+            <input type="text" id="synth-search-input" placeholder="Search synthetic records..." class="table-search-input">
+          </div>
+        </div>
+
+        <div class="glass-table-wrapper" id="synth-table-container">
+          <table class="glass-table" id="synth-preview-table">
+            <thead id="synth-table-head">
+              <!-- Dynamically populated -->
+            </thead>
+            <tbody id="synth-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 — UTILITY ANALYSIS -->
+    <section class="dashboard-section" id="utility-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 05</div>
+        <h2 class="section-title">Utility Validation</h2>
+        <p class="section-description">Evaluate distribution similarity, statistical correlation preservation, and machine-learning predictive utility.</p>
+      </div>
+
+      <!-- 5 Metric Cards -->
+      <div class="metrics-grid">
+        <!-- 1. Correlation Similarity -->
+        <div class="glass-card metric-card" id="mcard-correlation">
+          <div class="metric-top">
+            <span class="metric-label">Correlation Similarity</span>
+            <span class="status-indicator-badge status-green" id="badge-corr">Strong</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-corr">0.9502</span>
+            <span class="metric-unit">similarity</span>
+          </div>
+          <p class="metric-desc">Pairwise Spearman/Pearson correlation preservation between numerical columns.</p>
+          <div class="metric-status-bar">
+            <div class="metric-status-fill bg-green" id="bar-corr" style="width: 95%;"></div>
+          </div>
+        </div>
+
+        <!-- 2. Average KS Statistic -->
+        <div class="glass-card metric-card" id="mcard-ks">
+          <div class="metric-top">
+            <span class="metric-label">Average KS Statistic</span>
+            <span class="status-indicator-badge status-green" id="badge-ks">Strong</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-ks">0.0478</span>
+            <span class="metric-unit">divergence</span>
+          </div>
+          <p class="metric-desc">Kolmogorov-Smirnov distance comparing marginal distributions (lower is better).</p>
+          <div class="metric-status-bar">
+            <div class="metric-status-fill bg-green" id="bar-ks" style="width: 85%;"></div>
+          </div>
+        </div>
+
+        <!-- 3. ML Accuracy -->
+        <div class="glass-card metric-card" id="mcard-acc">
+          <div class="metric-top">
+            <span class="metric-label">ML Accuracy</span>
+            <span class="status-indicator-badge status-green" id="badge-acc">Preserved</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-acc">0.7350</span>
+            <span class="metric-unit">on real holdout</span>
+          </div>
+          <p class="metric-desc">Random Forest classifier trained on synthetic data, tested on real test set.</p>
+          <div class="metric-status-bar">
+            <div class="metric-status-fill bg-green" id="bar-acc" style="width: 73.5%;"></div>
+          </div>
+        </div>
+
+        <!-- 4. F1 Score -->
+        <div class="glass-card metric-card" id="mcard-f1">
+          <div class="metric-top">
+            <span class="metric-label">F1 Score</span>
+            <span class="status-indicator-badge status-green" id="badge-f1">Balanced</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-f1">0.0702</span>
+            <span class="metric-unit">churn target</span>
+          </div>
+          <p class="metric-desc">Harmonic mean of precision and recall on the test holdout set.</p>
+          <div class="metric-status-bar">
+            <div class="metric-status-fill bg-green" id="bar-f1" style="width: 70%;"></div>
+          </div>
+        </div>
+
+        <!-- 5. F1 Retention -->
+        <div class="glass-card metric-card" id="mcard-retention">
+          <div class="metric-top">
+            <span class="metric-label">F1 Retention</span>
+            <span class="status-indicator-badge status-green" id="badge-retention">Strong</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-retention">73.7%</span>
+            <span class="metric-unit">of real model</span>
+          </div>
+          <p class="metric-desc">Ratio of synthetic-trained model performance relative to real-trained baseline.</p>
+          <div class="metric-status-bar">
+            <div class="metric-status-fill bg-green" id="bar-retention" style="width: 73.7%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Charts Area -->
+      <div class="grid-2-col chart-grid">
+        <!-- Chart 1: Original vs Synthetic Distributions -->
+        <div class="glass-card chart-card">
+          <div class="chart-header-row">
+            <div>
+              <h3 class="chart-title">Original vs Synthetic Distribution</h3>
+              <p class="chart-sub">Marginal density distribution comparison</p>
+            </div>
+            <div class="chart-feature-selector">
+              <select id="dist-column-select" class="glass-select-sm">
+                <!-- Dynamically populated with numerical columns -->
+                <option value="age">Feature: age</option>
+                <option value="income">Feature: income</option>
+                <option value="credit_score">Feature: credit_score</option>
+                <option value="purchase_amount">Feature: purchase_amount</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-distribution"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Utility Comparison (Real vs Synthetic ML) -->
+        <div class="glass-card chart-card">
+          <div class="chart-header-row">
+            <div>
+              <h3 class="chart-title">Machine Learning Utility (TSTR)</h3>
+              <p class="chart-sub">Train on Synthetic, Test on Real holdout vs Real baseline</p>
+            </div>
+            <span class="status-pill status-ready">Random Forest</span>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-ml-utility"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Correlation Heatmap / Difference Visual -->
+      <div class="glass-card chart-card margin-top-md">
+        <div class="chart-header-row">
+          <div>
+            <h3 class="chart-title">Feature Correlation Similarity</h3>
+            <p class="chart-sub">Comparing pairwise covariance between real source data and synthetic records</p>
+          </div>
+          <div class="correlation-legend">
+            <span class="legend-chip"><span class="legend-box chip-real"></span> Real Correlations</span>
+            <span class="legend-chip"><span class="legend-box chip-synth"></span> Synthetic Correlations</span>
+          </div>
+        </div>
+        <div class="chart-canvas-wrapper-lg">
+          <canvas id="chart-correlation-bars"></canvas>
+        </div>
+      </div>
+
+      <!-- KS Statistics Breakdown Table -->
+      <div class="glass-card preview-card margin-top-md">
+        <div class="preview-header">
+          <h3 class="preview-title">Kolmogorov-Smirnov Test Breakdown</h3>
+          <span class="preview-counter">Per-feature statistical divergence (2-sample KS test)</span>
+        </div>
+        <div class="glass-table-wrapper">
+          <table class="glass-table" id="ks-summary-table">
+            <thead>
+              <tr>
+                <th>Numerical Feature</th>
+                <th>KS Statistic (Distance)</th>
+                <th>P-Value</th>
+                <th>Divergence Rating</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody id="ks-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 — PRIVACY ANALYSIS -->
+    <section class="dashboard-section" id="privacy-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 06</div>
+        <h2 class="section-title">Privacy & Memorization Check</h2>
+        <p class="section-description">Empirical evaluation of exact record duplication and nearest-neighbor distance distributions.</p>
+      </div>
+
+      <!-- Large Privacy Status Banner -->
+      <div class="glass-card privacy-hero-banner status-pass" id="privacy-hero-banner">
+        <div class="privacy-status-content">
+          <div class="privacy-badge-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
+          <div class="privacy-status-text-group">
+            <h3 class="privacy-status-title" id="privacy-banner-title">Privacy Check Passed</h3>
+            <p class="privacy-status-subtitle" id="privacy-banner-subtitle">
+              No exact training-record matches were detected in the synthetic dataset.
+            </p>
+          </div>
+        </div>
+        <div class="privacy-disclaimer-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Basic privacy/memorization assessment
+        </div>
+      </div>
+
+      <!-- Privacy Metrics Grid -->
+      <div class="privacy-metrics-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Exact Match Rate</span>
+            <span class="status-indicator-badge status-green" id="badge-em-rate">Zero Duplication</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-em-rate">0.0000</span>
+            <span class="metric-unit">ratio</span>
+          </div>
+          <p class="metric-desc">Percentage of synthetic records that are identical duplicates of source training records.</p>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Exact Matches Found</span>
+            <span class="status-indicator-badge status-green" id="badge-em-count">Passed</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-em-count">0</span>
+            <span class="metric-unit">records</span>
+          </div>
+          <p class="metric-desc">Absolute count of training records reproduced verbatim in the generated sample.</p>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Synthetic Avg Nearest Distance</span>
+            <span class="status-indicator-badge status-neutral">Metric</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-synth-dist">1.4820</span>
+            <span class="metric-unit">normalized dist</span>
+          </div>
+          <p class="metric-desc">Average Euclidean distance from each synthetic point to its closest training record.</p>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Training Avg Nearest Distance</span>
+            <span class="status-indicator-badge status-neutral">Baseline</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-train-dist">1.3653</span>
+            <span class="metric-unit">normalized dist</span>
+          </div>
+          <p class="metric-desc">Average intrinsic distance between distinct records within the training set.</p>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Distance Ratio</span>
+            <span class="status-indicator-badge status-green" id="badge-dist-ratio">Protected</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value font-mono" id="val-dist-ratio">1.0855</span>
+            <span class="metric-unit">ratio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsible AI / Privacy Notice -->
+      <div class="privacy-notice-box glass-card">
+        <div class="notice-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="notice-text">
+          <strong>Basic Privacy & Memorization Assessment Disclaimer:</strong>
+          These empirical metrics evaluate whether the generator memorized training rows or generated records unusually close to original records. They do not constitute formal differential privacy guarantees (&epsilon;, &delta;) or statutory regulatory certification (e.g., HIPAA/GDPR de-identification).
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6 — MODEL COMPARISON (BENCHMARK) -->
+    <section class="dashboard-section" id="benchmark-section">
+      <div class="section-header">
+        <div class="section-tag">STEP 07</div>
+        <h2 class="section-title">Model Benchmark</h2>
+        <p class="section-description">Head-to-head empirical comparison across Gaussian Copula, CTGAN, and CTGAN v2.</p>
+      </div>
+
+      <!-- Dynamic Winner Callout Banner -->
+      <div class="glass-card winner-card" id="winner-banner">
+        <div class="winner-trophy">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+          </svg>
+        </div>
+        <div class="winner-text-group">
+          <div class="winner-badge">STRONGEST OBSERVED MODEL</div>
+          <h3 class="winner-title" id="winner-model-name">Gaussian Copula</h3>
+          <p class="winner-rationale" id="winner-rationale-text">
+            Preserved 95.02% correlation similarity and achieved the lowest Kolmogorov-Smirnov distribution divergence across all 4 numerical features while maintaining a 1.086 privacy distance ratio.
+          </p>
+        </div>
+      </div>
+
+      <!-- Benchmark Comparison Cards -->
+      <div class="benchmark-cards-grid">
+        <!-- Gaussian Copula Card -->
+        <div class="glass-card benchmark-model-card" id="bench-card-copula">
+          <div class="bench-card-header">
+            <h4>Gaussian Copula</h4>
+            <span class="badge-winner">Recommended</span>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-stat-row">
+              <span class="bstat-name">Correlation Sim</span>
+              <span class="bstat-val font-mono">0.9502</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Avg KS Divergence</span>
+              <span class="bstat-val font-mono">0.0478</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Privacy Ratio</span>
+              <span class="bstat-val font-mono">1.0855</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">ML Accuracy</span>
+              <span class="bstat-val font-mono">0.7350</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">F1 Retention</span>
+              <span class="bstat-val font-mono">73.68%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTGAN Card -->
+        <div class="glass-card benchmark-model-card" id="bench-card-ctgan">
+          <div class="bench-card-header">
+            <h4>CTGAN</h4>
+            <span class="badge-neutral">Deep Model</span>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-stat-row">
+              <span class="bstat-name">Correlation Sim</span>
+              <span class="bstat-val font-mono">0.3750</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Avg KS Divergence</span>
+              <span class="bstat-val font-mono">0.2741</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Privacy Ratio</span>
+              <span class="bstat-val font-mono">3.4732</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">ML Accuracy</span>
+              <span class="bstat-val font-mono">0.7100</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">F1 Retention</span>
+              <span class="bstat-val font-mono">35.01%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTGAN v2 Card -->
+        <div class="glass-card benchmark-model-card" id="bench-card-ctgan-v2">
+          <div class="bench-card-header">
+            <h4>CTGAN v2</h4>
+            <span class="badge-accent">Tuned</span>
+          </div>
+          <div class="bench-stats">
+            <div class="bench-stat-row">
+              <span class="bstat-name">Correlation Sim</span>
+              <span class="bstat-val font-mono">0.5254</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Avg KS Divergence</span>
+              <span class="bstat-val font-mono">0.2403</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">Privacy Ratio</span>
+              <span class="bstat-val font-mono">2.9391</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">ML Accuracy</span>
+              <span class="bstat-val font-mono">0.7500</span>
+            </div>
+            <div class="bench-stat-row">
+              <span class="bstat-name">F1 Retention</span>
+              <span class="bstat-val font-mono">144.89%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benchmark Comparison Charts -->
+      <div class="glass-card chart-card margin-top-md">
+        <div class="chart-header-row">
+          <div>
+            <h3 class="chart-title">Multi-Model Performance Comparison</h3>
+            <p class="chart-sub">Comparing correlation preservation, KS divergence, accuracy, and F1 retention</p>
+          </div>
+        </div>
+        <div class="chart-canvas-wrapper-lg">
+          <canvas id="chart-benchmark"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7 — FINAL VERDICT (VALIDATION SUMMARY) -->
+    <section class="dashboard-section" id="verdict-section">
+      <div class="section-header">
+        <div class="section-tag">SUMMARY</div>
+        <h2 class="section-title">Validation Summary</h2>
+        <p class="section-description">Holistic validation verdict based on analytical similarity and privacy risk assessment.</p>
+      </div>
+
+      <div class="glass-card verdict-summary-card">
+        <div class="verdict-badges-grid">
+          <!-- UTILITY VERDICT -->
+          <div class="verdict-box" id="vbox-utility">
+            <div class="verdict-header">UTILITY</div>
+            <div class="verdict-status-icon status-green" id="vicon-utility">✓</div>
+            <div class="verdict-status-title" id="vtitle-utility">PASS</div>
+            <p class="verdict-status-sub" id="vsub-utility">High correlation preservation &amp; low KS divergence</p>
+          </div>
+
+          <!-- PRIVACY VERDICT -->
+          <div class="verdict-box" id="vbox-privacy">
+            <div class="verdict-header">PRIVACY</div>
+            <div class="verdict-status-icon status-green" id="vicon-privacy">✓</div>
+            <div class="verdict-status-title" id="vtitle-privacy">PASS</div>
+            <p class="verdict-status-sub" id="vsub-privacy">0 exact matches, safe nearest-neighbor dispersion</p>
+          </div>
+
+          <!-- OVERALL VERDICT -->
+          <div class="verdict-box verdict-box-overall" id="vbox-overall">
+            <div class="verdict-header">OVERALL VERDICT</div>
+            <div class="verdict-status-icon status-green" id="vicon-overall">✓</div>
+            <div class="verdict-status-title" id="vtitle-overall">PASS</div>
+            <p class="verdict-status-sub" id="vsub-overall">Approved for analytical experimentation</p>
+          </div>
+        </div>
+
+        <div class="verdict-explanation-box">
+          <div class="explanation-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <p class="explanation-text" id="verdict-explanation-text">
+            Generated synthetic data demonstrates useful analytical similarity while passing the configured basic privacy checks. The dataset is safe for downstream model experimentation, statistical validation, and pipeline development.
+          </p>
+        </div>
+
+        <div class="verdict-actions-footer">
+          <button id="btn-verdict-download" class="btn btn-accent btn-xl glow-effect">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Synthetic Dataset
+          </button>
+          <button id="btn-export-report" class="btn btn-secondary btn-xl glow-subtle" style="margin-left: 16px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Export Evaluation Report (.md)
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <strong>CODEHOLICS — Synthetic Data Generator</strong>
+        <span>Privacy &amp; Utility Validation Architecture • AI-04</span>
+      </div>
+      <div class="footer-right">
+        <span>Powered by SDV, CTGAN, Scikit-learn &amp; SciPy</span>
+      </div>
+    </div>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

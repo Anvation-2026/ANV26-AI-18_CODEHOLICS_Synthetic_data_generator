@@ -23,6 +23,7 @@ models/*
 
 # Experiment outputs
 experiments/results/*
+!experiments/results/all_models_comparison.csv
 
 # Operating system files
 .DS_Store

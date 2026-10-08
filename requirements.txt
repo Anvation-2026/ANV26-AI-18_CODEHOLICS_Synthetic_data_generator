@@ -27,6 +27,7 @@ deepecho==0.8.1
 defusedxml==0.7.1
 executing==2.2.1
 Faker==40.41.0
+fastapi==0.143.0
 fastjsonschema==2.22.2
 filelock==4.0.12
 fonttools==4.66.1

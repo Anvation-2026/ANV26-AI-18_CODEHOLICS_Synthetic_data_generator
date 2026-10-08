@@ -1,0 +1,4 @@
+model,ks_age,ks_income,ks_credit_score,ks_purchase_amount,correlation_similarity,exact_match_rate,privacy_distance_ratio,real_accuracy,synthetic_accuracy,real_f1,synthetic_f1,f1_retention,accuracy_retention,batch_size
+Gaussian Copula,0.0525,0.0625,0.035,0.0413,0.9502,0.0,1.0855,0.715,0.735,0.0952,0.0702,0.7368,1.028,
+CTGAN,0.085,0.3713,0.4213,0.2188,0.375,0.0,3.4732,0.715,0.71,0.0952,0.0333,0.3501,,
+CTGAN v2,0.2662,0.3625,0.2675,0.065,0.5254,0.0,2.9391,0.715,0.75,0.0952,0.1379,1.4489,,100

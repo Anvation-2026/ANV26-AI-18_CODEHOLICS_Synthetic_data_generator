@@ -72,6 +72,20 @@ The final prototype will provide an interactive interface where a user can:
 - Jupyter
 - Streamlit
 
+## Quick Start
+
+### 1. Modern Animated Web Application (FastAPI + Modern Web UI)
+```bash
+pip install -r requirements.txt
+python run_app.py
+```
+Opens automatically in your browser at `http://127.0.0.1:8000`.
+
+### 2. Streamlit Prototype
+```bash
+streamlit run app/streamlit_app.py
+```
+
 ## Project Status
 
-Development in progress.
+Ready for evaluation.
