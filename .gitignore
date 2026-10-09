@@ -31,3 +31,6 @@ Thumbs.db
 
 # VS Code settings
 .vscode/
+
+# Local tools
+.tools/
